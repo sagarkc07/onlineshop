@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Order Management";
+}
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-6 col-sm-12 col-md-6">
+            <h2>Order List</h2>
+        </div>
+        <table id="tblOrderData" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>O.Stats</th>
+                    <th>Payment Stats</th>
+                    <th>Total</th>
+                    <th>Ordered Date</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/order.js"></script>
+}
+

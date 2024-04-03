@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "User Management";
+}
+<div class="container">
+    <div class="row">
+
+        <div class="col-6">
+            <h2>User List</h2>
+        </div>
+        <div class="col-6 col-md-6 col-sm-12 mb-sm-2 text-sm-left text-md-right">
+            <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-primary text-light">
+                <i class="bi bi-plus-circle-dotted"></i> Register User
+            </a>
+        </div>
+        <table id="tblUserData" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/user.js"></script>
+}

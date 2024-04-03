@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "My Order";
+}
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-6">
+            <h2>My Orders</h2>
+        </div>
+        <table id="tblMyOrderData" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>OrderId</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>O.Stats</th>
+                    <th>Payment Stats</th>
+                    <th>Total</th>
+                    <th>Ordered Date</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/myOrder.js"></script>
+}
+

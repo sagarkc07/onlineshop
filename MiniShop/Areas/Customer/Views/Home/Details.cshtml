@@ -1,0 +1,232 @@
+﻿@model ProductVM
+@{
+    if (@Model.ShoppingCart.Product.Name == null)
+    {
+        ViewData["Title"] = "Product";
+
+    }
+    else
+    {
+        ViewData["Title"] = @Model.ShoppingCart.Product.Name;
+    }
+    int fullStars = (int)Model.OverallRating;
+        bool hasHalfStar = (double)@Model.OverallRating - fullStars >= 0.5;
+}
+
+<div class="container">
+
+    <form method="post" action="Details" id="cart-form">
+        <input asp-for="ShoppingCart.ProductId" hidden />
+        <div class="row">
+            <div class="col-lg-6 mb-5 ftco-animate">
+                <a href="@Model.ShoppingCart.Product.ImageURL" class="image-popup prod-img-bg"><img src="@Model.ShoppingCart.Product.ImageURL" class="img-fluid" alt="@Model.ShoppingCart.Product.Name"></a>
+            </div>
+            <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+                <h3>@Model.ShoppingCart.Product.Name</h3>
+
+                <div class="rating d-flex">
+
+
+                    <!-- Display the overall rating using stars -->
+                    <p class="text-left mr-4">
+
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            if (i < fullStars)
+                            {
+                                <a href="#"><i class="bi bi-star-fill"></i></a>
+                            }
+                            else if (hasHalfStar && i == fullStars)
+                            {
+                                <a href="#"><i class="bi bi-star-half"></i></a>
+                            }
+                            else
+                            {
+                                <a href="#"><i class="bi bi-star"></i></a>
+                            }
+                        }
+
+
+
+                    </p>
+                    <p class="text-left mr-4">
+                        <a href="#" class="mr-2" style="color: #000;">@Model.OverallRating <span style="color: #bbb;">Rating</span></a>
+                    </p>
+                    <p class="text-left">
+                        <a href="#" class="mr-2" style="color: #000;">@Model.UnitSold <span style="color: #bbb;">Sold</span></a>
+                    </p>
+                </div>
+
+                <p class="price"><span>@Model.ShoppingCart.Product.Price.ToString("c")</span></p>
+                <p>@Html.Raw(Model.ShoppingCart.Product.Description)</p>
+                <div class="row mt-4">
+                    <div class="w-100"></div>
+                    <div class="input-group col-md-6 d-flex mb-3">
+                        <span class="input-group-btn mr-2">
+                            <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
+                                <i class="ion-ios-remove"></i>
+                            </button>
+                        </span>
+                        <input type="text" asp-for="ShoppingCart.Quantity" id="quantity" name="ShoppingCart.Quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+                        <span class="input-group-btn ml-2">
+                            <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
+                                <i class="ion-ios-add"></i>
+                            </button>
+                        </span>
+                    </div>
+
+                    <div class="w-100"></div>
+                    <div class="col-md-12">
+                        <p style="color: #000;">@Model.ShoppingCart.Product.StockQuantity piece available</p>
+                    </div>
+                </div>
+                <p>
+                    <a id="add-to-cart-btn" class="btn btn-black py-3 px-5 mr-2">Add to Cart</a>
+                    <a id="buy-now-btn" class="btn btn-primary py-3 px-5">Buy now</a>
+                </p>
+            </div>
+        </div>
+    </form>
+</div>
+
+<section class="ftco-section ftco-degree-bg py-2">
+    <div class="container">
+        <div class="row">
+            <!-- Product Reviews-->
+            <div class="pt-2">
+                <h3 class="mb-2">
+                    @(Model.ProductReviewVM.ProductReviewsList.Count() == 0 ? "0 Comment" : $"{Model.ProductReviewVM.ProductReviewsList.Count()} Comments")
+                </h3>
+
+                <ul class="comment-list">
+                    @foreach (var review in Model.ProductReviewVM.ProductReviewsList)
+                    {
+                        string fullName = review.ApplicationUser.Name;
+                        <li class="comment">
+                            <div class="vcard bio">
+                                <img src="\images\user\user.png" alt="@fullName">
+                            </div>
+                            <div class="comment-body">
+                                <h3>@fullName</h3>
+                                <div class="d-flex">
+                                    <div class="text-primary">
+                                        @{
+                                            int rating = review.Rating;
+                                            for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi @(i <= rating ? "bi-star-fill" : "bi-star")" data-value="@i"></i>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="meta">@review.PublishedAt.ToString("MMMM dd, yyyy 'at' HH:mm tt")</div>
+                                <p>@review.ReviewText</p>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <!-- END comment-list -->
+                <!-- Post comment -->
+                @if (Model.HasPurchasedProduct)
+                {
+                    <h3>Leave your review</h3>
+                    <div class="comment-form-wrap pt-2">
+                        <form method="post" asp-action="PostReview" class="p-2 bg-light">
+                            <input asp-for="ShoppingCart.ProductId" hidden />
+                            <div class="form-group">
+                                <div class="d-flex">
+                                    <p class="mb-0 mr-2">Your Rating * :</p>
+                                    <div class="text-primary" id="ratingStars">
+                                        <i class="bi bi-star" data-value="1"></i>
+                                        <i class="bi bi-star" data-value="2"></i>
+                                        <i class="bi bi-star" data-value="3"></i>
+                                        <i class="bi bi-star" data-value="4"></i>
+                                        <i class="bi bi-star" data-value="5"></i>
+                                    </div>
+                                    <span asp-validation-for="ProductReviewVM.Rating" class="text-danger"></span>
+                                    <input type="hidden" id="selectedRating" asp-for="@Model.ProductReviewVM.Rating" name="ProductReviewVM.Rating" value="" />
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="message">Your Review *</label>
+                                <textarea asp-for="@Model.ProductReviewVM.ReviewText" name="ProductReviewVM.ReviewText" id="message" cols="30" rows="10" class="form-control"></textarea>
+                                <span asp-validation-for="ProductReviewVM.ReviewText" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                            </div>
+
+                        </form>
+                    </div>
+                }
+                <!-- Post comment -->
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+</div>
+
+@section Scripts{
+    <script>
+        document.getElementById('add-to-cart-btn').onclick = function () {
+            document.getElementById('cart-form').submit();
+        };
+        document.getElementById('buy-now-btn').onclick = function () {
+            var productId = @Model.ShoppingCart.ProductId;
+            var quantity = document.getElementById('quantity').value;
+            document.getElementById('cart-form').action = "/Customer/Home/BuyNow?productId=" + productId + "&quantity=" + quantity;
+            document.getElementById('cart-form').submit();
+        };
+
+
+
+        // script for rating
+        document.addEventListener("DOMContentLoaded", function () {
+            const stars = document.querySelectorAll("#ratingStars > .bi");
+            const ratingInput = document.getElementById("selectedRating");
+
+            stars.forEach(star => {
+                star.addEventListener("click", function () {
+                    const value = this.getAttribute("data-value");
+                    ratingInput.value = value;
+                    highlightStars(value);
+                });
+
+                star.addEventListener("mouseover", function () {
+                    const value = this.getAttribute("data-value");
+                    highlightStars(value);
+                });
+
+                star.addEventListener("mouseout", function () {
+                    const value = ratingInput.value;
+                    highlightStars(value);
+                });
+            });
+
+            function highlightStars(value) {
+                stars.forEach(star => {
+                    const starValue = star.getAttribute("data-value");
+                    if (starValue <= value) {
+                        star.classList.remove("bi-star");
+                        star.classList.add("bi-star-fill");
+                    } else {
+                        star.classList.remove("bi-star-fill");
+                        star.classList.add("bi-star");
+                    }
+                });
+            }
+        });
+    </script>
+
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
